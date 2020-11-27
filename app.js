@@ -1,5 +1,7 @@
 const fs = require('fs');
 const express = require('express');
+const { Certificate } = require('crypto');
+const { create } = require('domain');
 
 const app = express();
 
@@ -9,7 +11,7 @@ const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
     res.status(200).json({
         status: 'success',
         results: tours.length,
@@ -17,9 +19,9 @@ app.get('/api/v1/tours', (req, res) => {
             tours,
         },
     });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
     const tour = tours.find((el) => el.id === Number(req.params.id));
 
     if (tour) {
@@ -35,9 +37,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
             message: 'Invalid ID',
         });
     }
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
     const newId = tours[tours.length - 1].id + 1;
     const newTour = Object.assign({ id: newId }, req.body);
 
@@ -55,7 +57,31 @@ app.post('/api/v1/tours', (req, res) => {
             });
         }
     );
-});
+};
+
+// TODO: implement tour updating
+const updateTour = (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tour: '<Updated tour here...>',
+        },
+    });
+};
+
+// TODO: implement tour deleting
+const deleteTour = (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        data: null,
+    });
+};
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app.route('/api/v1/tours/:id')
+    .get(getTour)
+    .patch(updateTour)
+    .delete(deleteTour);
 
 const port = 5000;
 app.listen(port, () => {
