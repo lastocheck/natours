@@ -4,7 +4,8 @@
     "description": "Course project",
     "main": "app.js",
     "scripts": {
-        "start": "nodemon server.js"
+        "start": "nodemon server.js",
+        "debug": "ndb server.js"
     },
     "author": "lastocheck",
     "license": "ISC",
@@ -13,7 +14,8 @@
         "express": "^4.17.1",
         "mongoose": "^5.10.17",
         "morgan": "^1.10.0",
-        "slugify": "^1.4.6"
+        "slugify": "^1.4.6",
+        "validator": "^13.5.1"
     },
     "devDependencies": {
         "eslint": "^7.14.0",
