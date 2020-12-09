@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const { networkInterfaces } = require('os');
 
 const signToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -72,7 +71,7 @@ exports.protect = catchAsync(async (req, res, next) => {
         );
     }
 
-    if (freshUser.changedPasswordAfter(decoded.iat)) {
+    if (!freshUser.changedPasswordAfter(decoded.iat)) {
         return next(
             new AppError('User changed password. Please log in again', 401)
         );
@@ -81,3 +80,18 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.user = freshUser;
     next();
 });
+
+exports.restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role)) {
+            return next(
+                new AppError(
+                    'You do not have permission to perfrom this action',
+                    403
+                )
+            );
+        }
+
+        next();
+    };
+};
